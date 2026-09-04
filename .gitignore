@@ -1,0 +1,16 @@
+.env
+
+aria2-data/
+backend-data/
+downloads/
+
+__pycache__/
+*.py[cod]
+*.db
+*.sqlite
+*.sqlite3
+
+node_modules/
+dist/
+
+.DS_Store

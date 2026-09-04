@@ -1,0 +1,33 @@
+server {
+    listen 80;
+    server_name _;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    location /api/ {
+        proxy_pass http://backend:8000;
+
+        proxy_http_version 1.1;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # The backend's API key is injected here, server-side, at
+        # container start (nginx's built-in envsubst-on-templates
+        # entrypoint script substitutes ${API_KEY} from the environment).
+        # The browser and the JS bundle never see this value, so the
+        # same prebuilt frontend image works correctly no matter what
+        # API_KEY a given deployment's .env generates.
+        proxy_set_header X-API-Key "${API_KEY}";
+
+        proxy_read_timeout 300;
+        proxy_send_timeout 300;
+    }
+}
